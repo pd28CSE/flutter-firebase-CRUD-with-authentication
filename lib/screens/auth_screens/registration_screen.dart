@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../widgets/password_text_form_field.dart';
-import './registration_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   late GlobalKey<FormState> _formKey;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
 
   @override
   void initState() {
@@ -21,12 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
     _formKey = GlobalKey<FormState>();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -34,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: const Text('Create Account'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
@@ -72,27 +74,37 @@ class _LoginScreenState extends State<LoginScreen> {
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
+              PasswordTextFormField(
+                labelText: 'Confirm Password',
+                passwordEditingController: _confirmPasswordController,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Enter confirm password.';
+                  } else if (value!.length < 8) {
+                    return 'Password must be at least 8 characters.';
+                  } else if (value != _passwordController.text) {
+                    return 'Password and Confirm Password must be match.';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate() == true) {}
                 },
-                child: const Text('Login'),
+                child: const Text('Create Anncount'),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Text('Haven\'t account?'),
+                  const Text('Have an account?'),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (cntxt) => const RegistrationScreen(),
-                        ),
-                      );
+                      Navigator.pop(context);
                     },
-                    child: const Text('Create'),
+                    child: const Text('Login'),
                   )
                 ],
               ),
