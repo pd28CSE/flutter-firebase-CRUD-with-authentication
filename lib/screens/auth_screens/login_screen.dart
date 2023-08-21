@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../models/auth.dart';
 import '../../widgets/password_text_form_field.dart';
+import '../task_screen/task_list.dart';
 import './registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -150,6 +152,21 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       } else if (userCredential.user?.emailVerified == true) {
         log('login success');
+        // log(userCredential.user!.uid);
+        // log(userCredential.user!.phoneNumber.toString());
+        // log(userCredential.user.toString());
+        final UserModel user = UserModel(
+          userEmail: email,
+          userId: userCredential.user!.uid,
+        );
+        await UserAuth().saveUserAuth(user);
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (cntxt) => const TaskScreen()),
+            (route) => false,
+          );
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (e.code.contains('user-not-found') == true ||

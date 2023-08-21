@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/auth.dart';
 import './auth_screens/login_screen.dart';
+import './task_screen/task_list.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,11 +15,18 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5)).then((value) {
+    screenNavigate();
+  }
+
+  Future<void> screenNavigate() async {
+    bool isUserLogedIn = await UserAuth().isUserLogedIn();
+
+    Future.delayed(const Duration(seconds: 3)).then((value) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (cntxt) => const LoginScreen(),
+          builder: (cntxt) =>
+              isUserLogedIn == false ? const LoginScreen() : const TaskScreen(),
         ),
       );
     });
