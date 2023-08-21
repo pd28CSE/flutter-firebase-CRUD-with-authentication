@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../widgets/password_text_form_field.dart';
 import './registration_screen.dart';
@@ -11,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late bool _isLoginInProgress;
   late GlobalKey<FormState> _formKey;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
@@ -18,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _isLoginInProgress = false;
     _formKey = GlobalKey<FormState>();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
@@ -74,10 +80,21 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate() == true) {}
-                },
-                child: const Text('Login'),
+                onPressed: _isLoginInProgress == true
+                    ? null
+                    : () {
+                        if (_formKey.currentState!.validate() == true) {
+                          loginUser(
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text,
+                          );
+                        }
+                      },
+                child: Visibility(
+                  visible: _isLoginInProgress,
+                  replacement: const Text('Login'),
+                  child: const CircularProgressIndicator(),
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -99,6 +116,74 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    _isLoginInProgress = true;
+    if (mounted) {
+      setState(() {});
+    }
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      _isLoginInProgress = false;
+      if (mounted) {
+        setState(() {});
+      }
+      log(userCredential.user.toString());
+      if (userCredential.user?.emailVerified == false) {
+        showToastMessage('Please varify your account.',
+            color: Colors.red, actionLabel: 'SEND', action: () async {
+          await userCredential.user?.sendEmailVerification();
+          showToastMessage(
+            'Varification URL is sent to your email.',
+            color: Colors.green,
+          );
+        });
+      } else if (userCredential.user?.emailVerified == true) {
+        log('login success');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code.contains('user-not-found') == true ||
+          e.code.contains('wrong-password') == true) {
+        showToastMessage('E-mail or Password is incorrect!', color: Colors.red);
+      }
+    } catch (e) {
+      showToastMessage(e.toString(), color: Colors.red);
+    }
+
+    _isLoginInProgress = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void showToastMessage(String content,
+      {Color color = Colors.green, VoidCallback? action, String? actionLabel}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        content: Text(content),
+        action: actionLabel == null
+            ? null
+            : SnackBarAction(
+                onPressed: () {
+                  if (action != null) {
+                    action();
+                  }
+                },
+                label: actionLabel,
+                textColor: Colors.white,
+                backgroundColor: Colors.black38,
+              ),
       ),
     );
   }
