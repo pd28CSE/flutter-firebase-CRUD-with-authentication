@@ -26,6 +26,12 @@ class UserAuth {
       user = UserModel.fromJson(authUser);
     }
   }
+
+  static Future<void> clearUserAuth() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    user = UserModel();
+    prefs.clear();
+  }
 }
 
 class UserModel {

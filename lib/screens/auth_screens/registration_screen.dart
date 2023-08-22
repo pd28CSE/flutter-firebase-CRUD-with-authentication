@@ -44,6 +44,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _formKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Create Account'),
@@ -118,7 +119,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 const SizedBox(height: 15),
                 ElevatedButton(
-                  onPressed: _isCreateAccountInProgress == false
+                  onPressed: _isCreateAccountInProgress == true
                       ? null
                       : () {
                           if (_formKey.currentState!.validate() == true) {
