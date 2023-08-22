@@ -14,22 +14,17 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-  late bool _isCreateAccountInProgress;
-  late GlobalKey<FormState> _formKey;
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _passwordController;
-  late TextEditingController _confirmPasswordController;
+  bool _isCreateAccountInProgress = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _isCreateAccountInProgress = false;
-    _formKey = GlobalKey<FormState>();
-    _nameController = TextEditingController();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _confirmPasswordController = TextEditingController();
   }
 
   @override
@@ -128,6 +123,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               password: _passwordController.text,
                             ).then((value) {
                               if (value == true) {
+                                log('-------------');
                                 _formKey.currentState!.reset();
                                 _nameController.clear();
                                 _emailController.clear();
@@ -135,6 +131,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 _confirmPasswordController.clear();
                               }
                             });
+                            // if (ab && mounted) {
+                            //   log('==========');
+                            //   log('${_formKey.currentState}');
+                            //   _formKey.currentState?.reset();
+                            // }
                           }
                         },
                   child: const Text('Create Account'),
@@ -176,6 +177,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       );
       // log(userCredential.user.toString());
       _isCreateAccountInProgress = false;
+
       if (mounted) {
         setState(() {});
       }
@@ -205,6 +207,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         color: Colors.red,
       );
     }
+
     _isCreateAccountInProgress = false;
     if (mounted) {
       setState(() {});
