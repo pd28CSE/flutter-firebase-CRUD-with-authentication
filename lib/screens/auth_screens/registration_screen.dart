@@ -44,7 +44,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _formKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('Create Account'),
@@ -127,10 +126,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               name: _nameController.text.trim(),
                               email: _emailController.text.trim(),
                               password: _passwordController.text,
-                            );
+                            ).then((value) {
+                              if (value == true) {
+                                _formKey.currentState!.reset();
+                                _nameController.clear();
+                                _emailController.clear();
+                                _passwordController.clear();
+                                _confirmPasswordController.clear();
+                              }
+                            });
                           }
                         },
-                  child: const Text('Create Anncount'),
+                  child: const Text('Create Account'),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -152,7 +159,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Future<void> createUser({
+  Future<bool> createUser({
     required String name,
     required String email,
     required String password,
@@ -173,10 +180,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         setState(() {});
       }
       showToastMessage('Account create completed.');
-      _formKey.currentState!.reset();
       await userCredential.user?.updateDisplayName(name);
       await userCredential.user?.sendEmailVerification();
       showToastMessage('Account activation URL has been sent to your email.');
+      return true;
     } on FirebaseAuthException catch (e) {
       if (e.code.contains('weak-password') == true) {
         // log('The password provided is too weak.');
@@ -202,6 +209,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (mounted) {
       setState(() {});
     }
+    return false;
   }
 
   void showToastMessage(String content, {Color color = Colors.green}) {
