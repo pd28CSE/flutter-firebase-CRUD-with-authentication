@@ -131,11 +131,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 _confirmPasswordController.clear();
                               }
                             });
-                            // if (ab && mounted) {
-                            //   log('==========');
-                            //   log('${_formKey.currentState}');
-                            //   _formKey.currentState?.reset();
-                            // }
                           }
                         },
                   child: const Text('Create Account'),
